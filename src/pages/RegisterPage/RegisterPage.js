@@ -39,6 +39,8 @@ function RegisterPage() {
 
 
     return (
+        <div className="pageWrapper">
+
         <div className="auth-wrapper">
         <h1>회원가입.</h1>
         <form onSubmit={handleSubmit}>
@@ -63,8 +65,9 @@ function RegisterPage() {
                 이미 Apple ID가 있다면? 지금 로그인.
             </Link>
         </form>
+      </div>
     </div>
-    );
+   );
 }
 
 export default RegisterPage;

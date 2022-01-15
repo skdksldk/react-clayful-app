@@ -10,9 +10,9 @@ const AuthContextProvider = ({ children }) => {
     const isAuthenticated = () => {
         var Customer = clayful.Customer;
     
-    var options = {
-        customer: localStorage.getItem("accessToken")
-    };
+        var options = {
+          customer: localStorage.getItem("accessToken")
+        };
 
     Customer.isAuthenticated(options, function(err, result) {
         if (err) {
