@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import clayful from 'clayful/client-js';
 
 function RegisterPage() {
+      const navigate = useNavigate();
       const [email, setEmail] = useState("");
       const [password, setPassword] = useState("");
 
@@ -23,7 +24,7 @@ function RegisterPage() {
         email,
         password,
     };
-    console.log('payload',payload);
+    console.log("payload",payload);
 
     Customer.createMe(payload, function(err, result) {
         if (err) {
@@ -31,9 +32,7 @@ function RegisterPage() {
         console.log(err.code);
         }
 
-        var data = result.data;
-
-        console.log(data);
+        navigate("/login");
 
         });
     };
