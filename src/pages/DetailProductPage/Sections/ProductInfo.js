@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import "./ProductInfo.css";
+import {AuthContext} from "../../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import clayful from 'clayful/client-js';
+import { Alert } from "react-bootstrap";
 function ProductInfos({detail}) {
+    const navigate = useNavigate();
     const [count, setCount] = useState(1);
-
+    const [show, setShow] = useState(false);
+    const {isAuth} = useContext(AuthContext);
+    console.log('detail',detail);
     const handleQuantityClick =(type) => {
         if(type ==="plus") {
             setCount((prev) => prev +1);
@@ -11,8 +18,54 @@ function ProductInfos({detail}) {
             setCount((prev) => prev -1);
         }
     };
+
+    const handleActionClick = (tpye) => {
+        if(!isAuth) {
+            alert("로그인해주세요.")
+            navigate("/login");
+            return;
+        }
+        let Cart = clayful.Cart;
+
+        let payload = { 
+            product: detail._id,
+            variant: detail.variants[0]._id,
+            quantity: count,
+            shippingMethod: detail.shipping.methods[0]._id
+        };
+        
+        let options = {
+            customer: localStorage.getItem('accessToken'),
+        };
+        
+        Cart.addItemForMe(payload, options, function(err, result) {
+        
+            if (err) {
+                // Error case
+                console.log(err.code);
+                return;
+            }
+        if(type ==="cart") {
+            setShow(true);
+            setTimeout(() => {
+             setShow(false);
+            }, 3000);
+        } else {
+          setTimeout(() => {
+              navigate("/user/cart");
+          }, 1000);    
+        }
+    });
+};
+
     return (
         <div>
+        {show && (
+            <Alert variant="info">
+                 <Alert.Heading> 상품이 장바구니에 담겼습니다.</Alert.Heading>
+                 <p>장바구니에서 확인해주세요.</p>
+            </Alert>
+        )}
             <p style={{ color:'#bf4800', marginBottom:0 }}>New</p>
             <h1 style={{ marginBottom:20 }}>{detail.name} 구입하기 </h1>
             <h5>
@@ -35,9 +88,19 @@ function ProductInfos({detail}) {
 
             <br />
             <h3>총 상품 금액: {detail.price?.original.raw * count}원</h3>
-        <br />
-            <div className="product-info-action">장바구니에 담기</div>
-            <div className="product-info-action">바로 구매</div> 
+            <br />
+            <div 
+              onClick={()=> handleActionClick("cart")}
+              className="product-info-action"
+              >
+                장바구니에 담기
+            </div>
+            <div 
+              onClick = {() => handleActionClick("pay")}
+              className="product-info-action"
+            >
+              바로 구매
+              </div> 
             </div>
         </div>
     )
