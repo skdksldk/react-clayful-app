@@ -35,7 +35,7 @@ const AuthContextProvider = ({ children }) => {
         setIsAuth(false);
         localStorage.removeItem("accessToken");
         navigate("/login");
-    }
+    };
 
     const AuthContextData = {
         isAuth,

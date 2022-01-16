@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 function CartPage() {
     return (
@@ -8,4 +8,4 @@ function CartPage() {
     )
 }
 
-export default CartPage
+export default CartPage;
