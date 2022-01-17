@@ -137,11 +137,17 @@ function PaymentPage() {
             <input type="text" readOnly placeholder="우편번호"/>
 
             <h5>결재</h5>
-            <select>
-                <option>옵션</option>
+            <select value={paymentMethod} onChange={(e) =>setPaymentMethod(e.target.value)}>
+                <option>결재 수단 선택</option>
+                {paymentMethods.map(method => (
+                    <option key={method.slug} value={method.slug} >{method.name}</option>
+                ))}
             </select>
            
             <button style={{ width: "100%", marginTop: 10 }}>주문</button>
+            {
+                paymentMethod === "bank-transfer" && <p>계좌번호 : 1111-1111 클레이풀 은행</p>
+            }
           </div>
         </div>
       </div>
