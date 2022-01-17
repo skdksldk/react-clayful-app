@@ -1,10 +1,10 @@
 import React,{useState, useEffect} from 'react';
 import clayful from "clayful/client-js";
 import "./PaymentPage.css";
-
-
+import { useNavigate } from "react-router-dom";
 
 function PaymentPage() {
+    const navigate = useNavigate();
     const [cart, setCart] = useState({});
     const [paymentMethods, setPaymentMethods] = useState([]);
 
@@ -26,15 +26,23 @@ function PaymentPage() {
             address2:"",
             country:"",
         });
+        const [show, setShow] = useState(false);
 
         const [isChecked, setIsChecked] = useState(false);
         const [paymentMethod, setPaymentMethod] = useState("");
+        var options = {
+            customer: localStorage.getItem("accessToken"),
+          };
+        var Cart = clayful.Cart;
    
    
     useEffect(() => {
         getCartData();
         getPaymentData();
     }, []);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
     const getPaymentData = () => {
         var PaymentMethod = clayful.PaymentMethod;
@@ -51,7 +59,6 @@ function PaymentPage() {
     });
 };
     const getCartData =() => {
-        var Cart = clayful.Cart;
 
         var options = {
 	    customer: localStorage.getItem("accessToken"),
@@ -98,7 +105,91 @@ function PaymentPage() {
              });
          }
     };
-    
+
+    const handleCompletePaymentClick = () => {
+
+        var Customer = clayful.Customer;
+        const body = {
+            name : {
+                full: sendUserInfo.full
+            },
+            mobile: sendUserInfo.mobile
+        }
+
+        Customer.updateMe(body, options, function(err, result) {
+
+            if (err) {
+                // Error case
+                console.log(err.code);
+            }
+        
+            var headers = result.headers;
+            var data = result.data;
+        
+            console.log(data);
+
+            let items = [];
+
+            cart.items.map((item) => {
+                let itemVariable = {};
+                itemVariable.bundleItems = item.bundleItems;
+                itemVariable.product = item.product._id;
+                itemVariable.quantity = item.quantity.raw;
+                itemVariable.shippingMethod = item.shippingMethod._id;
+                itemVariable.variant = item.variant._id;
+                itemVariable._id = item._id;
+                return items.push(itemVariable);
+            });
+
+            let payload = {
+                items,
+                currency: cart.currency.payment.code,
+                paymentMethod,
+                address: {
+                  shipping: {
+                    name: {
+                      full: recvUserInfo.full,
+                    },
+                    mobile: recvUserInfo.mobile,
+                    phone: recvUserInfo.phone,
+                    postcode: address.postCode,
+                    state: address.state,
+                    city: address.city,
+                    address1: address.address1,
+                    address2: address.address2,
+                    country: "KR",
+                  },
+                  billing: {
+                    name: {
+                      full: recvUserInfo.full,
+                    },
+                    mobile: recvUserInfo.mobile,
+                    phone: recvUserInfo.phone,
+                    postcode: address.postCode,
+                    state: address.state,
+                    city: address.city,
+                    address1: address.address1,
+                    address2: address.address2,
+                    country: "KR",
+                  },
+                },
+              };
+
+              Cart.checkoutForMe("order", payload, options, function (err, result) {
+                if (err) {
+                  // Error case
+                  console.log(err.code);
+                }
+        
+                var data = result.data;
+        
+                console.log(data);
+                navigate("/history");
+              });
+            });
+    };        
+     
+        
     return (
     <div className="pageWrapper">
         <div className="payment">
@@ -144,7 +235,7 @@ function PaymentPage() {
                 ))}
             </select>
            
-            <button style={{ width: "100%", marginTop: 10 }}>주문</button>
+            <button onClick={handleCompletePaymentClick} style={{ width: "100%", marginTop: 10 }}>주문</button>
             {
                 paymentMethod === "bank-transfer" && <p>계좌번호 : 1111-1111 클레이풀 은행</p>
             }
