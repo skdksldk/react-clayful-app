@@ -7,14 +7,13 @@ import CartItem from "./Sections/CartItem";
 function CartPage() {
     const navigate = useNavigate();
     const [cart, setCart] = useState({});
+    var Cart = clayful.Cart;
+
+    var options = {
+        customer: localStorage.getItem("accessToken"),
+    };
 
     useEffect(() => {
-        var Cart = clayful.Cart;
-
-        var options = {
-            customer: localStorage.getItem("accessToken"),
-        };
-        
         Cart.getForMe({}, options, function(err, result) {
         
             if (err) {
@@ -23,12 +22,72 @@ function CartPage() {
                 return;
             }
             var data = result.data;
+            console.log("data", data);
             setCart(data.cart) 
       });
     }, []);
 
+    const updateItemData = (itemId, quantity) => {
+        let payload = {
+          quantity,
+        };
+    
+        Cart.updateItemForMe(itemId, payload, options, function (err, result) {
+          if (err) {
+            // Error case
+            console.log(err.code);
+            return;
+          }
+        });
+      };
+    
+      const buttonHandler = (type, index) => {
+        let newCart = { ...cart };
+    
+        if (type === "plus") {
+    
+        const price = cart.items[index].price.original.raw / cart.items[index].quantity.raw;
+          // 해당 아이템 가격 변경
+          newCart.items[index].price.original.raw += price;
+          // 전체 아이템 가격 변경
+          newCart.total.amount.raw += price;
+          // 해당 아이템 갯수 변경
+          newCart.items[index].quantity.raw += 1;
+    
+        } else {
+          if (newCart.items[index].quantity.raw === 1) return;
+    
+          const price = cart.items[index].price.original.raw / cart.items[index].quantity.raw;
+          newCart.total.amount.raw -= price ;
+          newCart.items[index].price.original.raw -= price;
+          newCart.items[index].quantity.raw -= 1;
+        }
+        updateItemData(newCart.items[index]._id, newCart.items[index].quantity.raw);
+        setCart(newCart);
+      };
+    
+    const removeItemFromState = (itemId, price) => {
+        let newCart = {...cart};
+        let filteredItems = newCart.items.filter(item => item._id !== itemId);
+        newCart.items = filteredItems;
+        newCart.total.amount.raw = newCart.total.amount.raw - price;
+        setCart(newCart);
+    }
+    
+      const deleteItemHandler = (itemId, price) => {
+        Cart.deleteItemForMe(itemId, options, function(err, result) {
+    
+            if (err) {
+                // Error case
+                console.log(err.code);
+                return;
+            }
+            removeItemFromState(itemId, price)
+        
+        });
+      }
+
     const items = cart.items;
-    console.log('items',items);
     return (
       <div className="pageWrapper">
         <div className="shopping-cart">
@@ -37,11 +96,15 @@ function CartPage() {
             <div className="shopping-cart-body" style={{ minHeight:100}}> 
             {items && items.length > 0 ? (
                     items.map((item, index) => {
-                        return <CartItem 
+                        return (
+                        <CartItem 
                             key= {item._id}
                             item={item}
                             index={index}
-                        />;
+                            deleteItemHandler={(itemId, price) => deleteItemHandler(itemId, price)}
+                            buttonHandler={(type, index) => buttonHandler(type, index)}
+                        />
+                      );
                     })
                 ): (
                   <p style={{ textAlign: "center", marginTop: "2rem"}}>
