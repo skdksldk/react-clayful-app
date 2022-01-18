@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import "./Cartpage.css";
 import CartItem from "./Sections/CartItem";
 
-function CartPage() {
+function Cartpage() {
     const navigate = useNavigate();
     const [cart, setCart] = useState({});
     var Cart = clayful.Cart;
@@ -133,4 +133,4 @@ function CartPage() {
 }
 
 
-export default CartPage;
+export default Cartpage;
