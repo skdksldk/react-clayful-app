@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import clayful from "clayful/client-js";
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import "./CartPage.css";
 import CartItem from "./Sections/CartItem";
 
