@@ -59,7 +59,7 @@
     align-items: center;
     transition: 0.5s;
   }
-  .grid-product:hover {
+  .grid-product {
     background: #e1e1e1;
   }
   .grid-product img {
@@ -69,11 +69,11 @@
     margin: 20px 0;
     text-align: center;
   }
-  .grid-detail p:last-child {
+  .grid-detail p {
     transition: 0.5s;
     margin-top: 10px;
   }
-  .grid-product:hover > .grid-detail p:last-child {
+  .grid-product > .grid-detail p {
     color: #3498db;
   }
   
@@ -147,7 +147,7 @@
     font-size: 0.85em;
     color: #fff;
   }
-  .watch-more-wrapper a:after {
+  .watch-more-wrapper a {
     font-family: "FontAwesome";
     font-weight: 900;
     content: "\f144";
@@ -232,10 +232,8 @@
     text-decoration: none;
     font-size: 21px;
   }
-  .links-wrapper ul li a:hover {
-    color: #000;
-  }
-  .links-wrapper ul li a:after {
+ 
+  .links-wrapper ul li a {
     font-family: "FontAwesome";
     font-weight: 900;
     content: ">";
@@ -272,7 +270,7 @@
       padding: 10px 0;
       border-bottom: 1px solid #ccc;
     }
-    .footer-links-wrapper h3:after {
+    .footer-links-wrapper h3 {
       font-family: "FontAwesome";
       content: "\f067";
       padding-left: 10px;

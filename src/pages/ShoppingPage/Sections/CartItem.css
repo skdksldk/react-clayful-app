@@ -34,11 +34,11 @@
     font-weight: 400;
 }
 
-.description span:first-child {
+.description span {
     margin-bottom: 5px;
 }
 
-.description span:last-child {
+.description span {
     font-weight: 300;
     margin-top: 8px;
     color: #86939e;
